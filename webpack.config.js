@@ -54,16 +54,6 @@ const rruleConfig = Object.assign({
     rrule: path.join(paths.source, "index.ts"),
     'rrule.min': path.join(paths.source, "index.ts")
   },
-  externals: {
-    luxon: 'luxon'
-  },
-}, commonConfig);
-
-const rruleWithLuxonConfig = Object.assign({
-  entry: {
-    'rrule-tz': path.join(paths.source, "index.ts"),
-    'rrule-tz.min': path.join(paths.source, "index.ts")
-  },
 }, commonConfig);
 
 const demoConfig = {
@@ -110,4 +100,4 @@ const demoConfig = {
   mode: "production"
 };
 
-module.exports = [rruleConfig, rruleWithLuxonConfig, demoConfig];
+module.exports = [rruleConfig, demoConfig];
