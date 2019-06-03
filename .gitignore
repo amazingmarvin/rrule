@@ -5,4 +5,7 @@ bower_components/
 *.log
 coverage
 .nyc_output
-dist/
+dist/esm/demo
+*.d.ts
+*.min.js
+*.map
