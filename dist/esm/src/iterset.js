@@ -1,35 +1,40 @@
 import { DateWithZone } from './datewithzone';
 import { iter } from './iter/index';
 import dateutil from './dateutil';
+// function inExdateHash(exdateHash: { [k: number]: boolean }, dt: number) {
+//  for (const key in exdateHash) {
+//    if (Math.abs(key - dt) <
+//  }
+// }
+function getExdate(d) {
+    return d.getDate() + 100 * d.getMonth() + 10000 * d.getFullYear();
+}
 export function iterSet(iterResult, _rrule, _exrule, _rdate, _exdate, tzid) {
     var _exdateHash = {};
     var _accept = iterResult.accept;
     function evalExdate(after, before) {
         _exrule.forEach(function (rrule) {
             rrule.between(after, before, true).forEach(function (date) {
-                _exdateHash[Number(date)] = true;
+                _exdateHash[getExdate(date)] = true;
             });
         });
     }
     _exdate.forEach(function (date) {
         var zonedDate = new DateWithZone(date, tzid).rezonedDate();
-        _exdateHash[Number(zonedDate)] = true;
+        _exdateHash[getExdate(zonedDate)] = true;
     });
     iterResult.accept = function (date) {
-        var dt = Number(date);
+        var dt = getExdate(date);
         if (!_exdateHash[dt]) {
-            evalExdate(new Date(dt - 1), new Date(dt + 1));
-            if (!_exdateHash[dt]) {
-                _exdateHash[dt] = true;
-                return _accept.call(this, date);
-            }
+            _exdateHash[dt] = true;
+            return _accept.call(this, date);
         }
         return true;
     };
     if (iterResult.method === 'between') {
         evalExdate(iterResult.args.after, iterResult.args.before);
         iterResult.accept = function (date) {
-            var dt = Number(date);
+            var dt = getExdate(date);
             if (!_exdateHash[dt]) {
                 _exdateHash[dt] = true;
                 return _accept.call(this, date);

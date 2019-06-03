@@ -5,6 +5,16 @@ import { iter } from './iter/index'
 import dateutil from './dateutil'
 import { QueryMethodTypes, IterResultType } from './types'
 
+// function inExdateHash(exdateHash: { [k: number]: boolean }, dt: number) {
+//  for (const key in exdateHash) {
+//    if (Math.abs(key - dt) <
+//  }
+// }
+
+function getExdate (d: Date): number {
+  return d.getDate() + 100 * d.getMonth() + 10000 * d.getFullYear()
+}
+
 export function iterSet <M extends QueryMethodTypes> (
   iterResult: IterResult<M>,
   _rrule: RRule[],
@@ -19,24 +29,21 @@ export function iterSet <M extends QueryMethodTypes> (
   function evalExdate (after: Date, before: Date) {
     _exrule.forEach(function (rrule) {
       rrule.between(after, before, true).forEach(function (date) {
-        _exdateHash[Number(date)] = true
+        _exdateHash[getExdate(date)] = true
       })
     })
   }
 
   _exdate.forEach(function (date) {
     const zonedDate = new DateWithZone(date, tzid).rezonedDate()
-    _exdateHash[Number(zonedDate)] = true
+    _exdateHash[getExdate(zonedDate)] = true
   })
 
   iterResult.accept = function (date) {
-    const dt = Number(date)
+    const dt = getExdate(date)
     if (!_exdateHash[dt]) {
-      evalExdate(new Date(dt - 1), new Date(dt + 1))
-      if (!_exdateHash[dt]) {
-        _exdateHash[dt] = true
-        return _accept.call(this, date)
-      }
+      _exdateHash[dt] = true
+      return _accept.call(this, date)
     }
     return true
   }
@@ -44,7 +51,7 @@ export function iterSet <M extends QueryMethodTypes> (
   if (iterResult.method === 'between') {
     evalExdate(iterResult.args.after!, iterResult.args.before!)
     iterResult.accept = function (date) {
-      const dt = Number(date)
+      const dt = getExdate(date)
       if (!_exdateHash[dt]) {
         _exdateHash[dt] = true
         return _accept.call(this, date)
