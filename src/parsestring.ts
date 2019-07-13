@@ -69,6 +69,7 @@ function parseRrule (line: string) {
       case 'BYMONTHDAY':
       case 'BYYEARDAY':
       case 'BYWEEKNO':
+      case 'BYNWEEKDAY':
       case 'BYHOUR':
       case 'BYMINUTE':
       case 'BYSECOND':
