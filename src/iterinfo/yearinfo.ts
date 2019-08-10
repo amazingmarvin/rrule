@@ -140,6 +140,16 @@ export function rebuildYear (year: number, options: ParsedOptions) {
   return result
 }
 
+// Memoize this hotspot
+const weekdayMasks: { [offset: number]: number[] } = { }
+function getWeekdayMask (offset: number) {
+  if (!weekdayMasks[offset]) {
+    weekdayMasks[offset] = WDAYMASK.slice(offset)
+  }
+
+  return weekdayMasks[offset]
+}
+
 function baseYearMasks (year: number) {
   const yearlen = dateutil.isLeapYear(year) ? 366 : 365
   const firstyday = new Date(Date.UTC(year, 0, 1))
@@ -150,7 +160,7 @@ function baseYearMasks (year: number) {
       mmask: M365MASK as number[],
       mdaymask: MDAY365MASK,
       nmdaymask: NMDAY365MASK,
-      wdaymask: WDAYMASK.slice(wday),
+      wdaymask: getWeekdayMask(wday),
       mrange: M365RANGE
     }
   }
@@ -159,7 +169,7 @@ function baseYearMasks (year: number) {
     mmask: M366MASK as number[],
     mdaymask: MDAY366MASK,
     nmdaymask: NMDAY366MASK,
-    wdaymask: WDAYMASK.slice(wday),
+    wdaymask: getWeekdayMask(wday),
     mrange: M366RANGE
   }
 }
