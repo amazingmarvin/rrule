@@ -108,6 +108,14 @@ export function rebuildYear(year, options) {
     }
     return result;
 }
+// Memoize this hotspot
+var weekdayMasks = {};
+function getWeekdayMask(offset) {
+    if (!weekdayMasks[offset]) {
+        weekdayMasks[offset] = WDAYMASK.slice(offset);
+    }
+    return weekdayMasks[offset];
+}
 function baseYearMasks(year) {
     var yearlen = dateutil.isLeapYear(year) ? 366 : 365;
     var firstyday = new Date(Date.UTC(year, 0, 1));
@@ -117,7 +125,7 @@ function baseYearMasks(year) {
             mmask: M365MASK,
             mdaymask: MDAY365MASK,
             nmdaymask: NMDAY365MASK,
-            wdaymask: WDAYMASK.slice(wday),
+            wdaymask: getWeekdayMask(wday),
             mrange: M365RANGE
         };
     }
@@ -125,7 +133,7 @@ function baseYearMasks(year) {
         mmask: M366MASK,
         mdaymask: MDAY366MASK,
         nmdaymask: NMDAY366MASK,
-        wdaymask: WDAYMASK.slice(wday),
+        wdaymask: getWeekdayMask(wday),
         mrange: M366RANGE
     };
 }
